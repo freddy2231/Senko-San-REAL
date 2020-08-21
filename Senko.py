@@ -312,6 +312,26 @@ async def protecc(ctx):
       await ctx.channel.send("No bullying allowed!", file=protecc)
       record_stats("s$protecc", ctx)
 
+#@bot.command(name="sing")
+#async def sing(ctx):
+#  user = ctx.message.author
+#  voice_channel = user.voice.voice_channel
+#  channel = None
+  # only play music if user is in a voice channel
+#  if voice_channel != None:
+#      channel = voice_channel.name
+#      await bot.say('User is in channel: '+ channel)
+#      vc = await bot.join_voice_channel(voice_channel)
+#      player = vc.create_ffmpeg_player('vuvuzela.mp3', after=lambda: print('done'))
+#      player.start()
+#      while not player.is_done():
+#          await asyncio.sleep(1)
+#      player.stop()
+#      await vc.disconnect()
+#  else:
+#      await client.say('User is not in a channel.')
+
+
 #Invites
 @bot.command(name="bot_invite")
 async def bot_invite(ctx):
