@@ -624,6 +624,8 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     print("Number of guilds: " + str(len(bot.guilds)))
-    
+    bot.bruh_guilds = [bot.user.id]   #I know the first content of guilds is the bot user id this automate adding itself when ready instead keep changing code
+    bot.serious_guilds = [bot.user.id]
+
 #keep_alive()  also not run in repl again
 bot.run(os.environ.get("TOKEN"))
