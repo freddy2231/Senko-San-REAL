@@ -7,9 +7,19 @@ import asyncio
 import random
 from time import gmtime, strftime
 
-bot = commands.Bot(command_prefix = "s$")
+print("Please wait for me")
+
+prefix = "s$"
+bot = commands.Bot(command_prefix = prefix)
 bot.remove_command('help')
 
+bot.playing_music = False
+bot.playing_music_chn = None
+bot.playing_music_name = ''
+bot.playing_music_stop = False
+
+senko_san_op = "Senko_San_OP.mp3"
+senko_san_end = "Senko_San_END.mp3"
   
 #SERIOUS GUILD COMMANDS
 
@@ -144,28 +154,87 @@ async def getBruhGuilds(ctx):
 
 #COMMANDS
 
-@bot.command(name='singintro')
-async def singintro(context):  # Singing  intro command
+async def playMusic(context, music):
+
     # grab the user who sent the command
     user=context.message.author
 
     voice_channel=context.message.author.voice
     channel=None
+
+    if bot.playing_music == True and bot.playing_music_name != music:
+        await context.channel.send(user.mention + ' i currently singing other music in \'' + bot.playing_music_chn + '\'')
+        return
     # only play music if user is in a voice channel
-    if voice_channel!= None:
+    if voice_channel!= None and bot.playing_music == False:
         # grab user's voice channel
         channel=voice_channel.channel.name
-        await context.channel.send('User is in channel: '+ channel)
-        # create StreamPlayer
+
+        bot.playing_music = True
+        bot.playing_music_chn = channel
+        bot.playing_music_name = music
+        bot.playing_music_stop = False
+
+        await context.channel.send('Senko San is singing in \'' + channel + '\' come to me')
         
         vc = context.author.voice
         if vc:
-            await vc.channel.connect()
+            vc = await vc.channel.connect()
 
-        await asyncio.sleep(5)
+        #await asyncio.sleep(15)
+
+        source = discord.FFmpegPCMAudio(music)
+        player = vc.play(source)
+
+        while vc.is_playing():
+            if bot.playing_music_stop == True:
+                await context.channel.send("Ok")
+                break
+            await asyncio.sleep(.1)  #Sleep while playing music
+
         await vc.disconnect()
+        bot.playing_music = False
+        bot.playing_music_name = None
+        bot.playing_music_name = ''
+        bot.playing_music_stop = False
+
+    elif bot.playing_music == True:
+        if voice_channel != None and voice_channel.channel.name == bot.playing_music_chn:
+            await context.channel.send(user.mention + ' you already in the channel')
+        else:
+            await context.channel.send(user.mention + ' can you enter the \'' + bot.playing_music_chn + '\' channel please because i currently singing there')
     else:
         await context.channel.send(user.mention + ' can you enter the voice channel please if you want me singing for you')
+
+@bot.command(name='sing')
+async def sing(ctx, *arg):  # Singing  intro command
+    if len(arg) == 0:
+        await ctx.channel.send("Usage:")
+        await ctx.channel.send(prefix + "sing [intro | end | stop | status]")
+    elif arg[0].lower() == 'intro':
+        await playMusic(ctx, senko_san_op)
+
+    elif arg[0].lower() == 'end':
+        await playMusic(ctx, senko_san_end)
+
+    elif arg[0].lower() == 'stop':
+        if bot.playing_music == False:
+            await ctx.channel.send("Currently i'm not singing")
+            return
+        bot.playing_music_stop = True
+
+    elif arg[0].lower() == 'status':
+        await ctx.channel.send('Status:')
+        if bot.playing_music == False:
+            await ctx.channel.send("Currently i'm not singing")
+            return
+        await ctx.channel.send('Voice Channel: ' + bot.playing_music_chn)
+        await ctx.channel.send('Join the channel if you like me singing for you')
+
+    else:
+        await ctx.channel.send("No such subcommands")
+        await ctx.channel.send("Usage:")
+        await ctx.channel.send(prefix + "sing [intro | end | stop | status]")
 
 @bot.command(name='hello')
 async def hello(ctx):
