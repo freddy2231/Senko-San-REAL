@@ -1,7 +1,7 @@
 # Work with Python 3.6
 import discord
 from discord.ext import commands
-from webserver import keep_alive
+#from webserver import keep_alive  Because this will not run in repl again
 import os
 import asyncio
 import random
@@ -13,7 +13,7 @@ bot.remove_command('help')
   
 #SERIOUS GUILD COMMANDS
 
-bot.serious_guilds = [688534403260874873]
+bot.serious_guilds = []  #688534403260874873] this will not portable for us to test
 
 @bot.command(name='guildIsSerious')
 async def guildIsSerious(ctx):
@@ -114,7 +114,7 @@ async def getCensoredGuilds(ctx):
 
 #BRUH DETECTOR COMMANDS
 
-bot.bruh_guilds = [688534403260874873]
+bot.bruh_guilds = []  #688534403260874873] this will not portable for us to test
 
 @bot.command(name='guildIsNotBruh')
 async def guildIsBruh(ctx):
@@ -143,6 +143,29 @@ async def getBruhGuilds(ctx):
 
 
 #COMMANDS
+
+@bot.command(name='singintro')
+async def singintro(context):  # Singing  intro command
+    # grab the user who sent the command
+    user=context.message.author
+
+    voice_channel=context.message.author.voice
+    channel=None
+    # only play music if user is in a voice channel
+    if voice_channel!= None:
+        # grab user's voice channel
+        channel=voice_channel.channel.name
+        await context.channel.send('User is in channel: '+ channel)
+        # create StreamPlayer
+        
+        vc = context.author.voice
+        if vc:
+            await vc.channel.connect()
+
+        await asyncio.sleep(5)
+        await vc.disconnect()
+    else:
+        await context.channel.send(user.mention + ' can you enter the voice channel please if you want me singing for you')
 
 @bot.command(name='hello')
 async def hello(ctx):
@@ -460,6 +483,7 @@ async def on_message(message):
     bad_words[5] = "bitch"
     bad_words[6] = "retard"
     bad_words[7] = "arnold"
+    bad_words[8] = "asshole" 
 
     censor = False
     if message.guild.id in bot.censored_guilds:
@@ -601,5 +625,5 @@ async def on_ready():
     print('------')
     print("Number of guilds: " + str(len(bot.guilds)))
     
-keep_alive()
+#keep_alive()  also not run in repl again
 bot.run(os.environ.get("TOKEN"))
