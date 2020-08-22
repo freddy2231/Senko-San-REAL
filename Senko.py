@@ -628,4 +628,7 @@ async def on_ready():
     bot.serious_guilds = [bot.user.id]
 
 #keep_alive()  also not run in repl again
-bot.run(os.environ.get("TOKEN"))
+if not os.environ.get("TOKEN") == None:
+    bot.run(os.environ.get("TOKEN"))
+else:
+    print("Error: TOKEN enviroment variable not set")
