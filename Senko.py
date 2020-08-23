@@ -31,7 +31,32 @@ bot.remove_command('help')
 
 
 #SERIOUS GUILD COMMANDS
+@bot.command()
 
+async def load(ctx, cogname):
+  if ctx.author.id == 219987389135716364 or 597420184122294272 or 361143836598337546:
+    bot.load_extension(f"cogs.{cogname}")
+    await ctx.send(f"Loaded {cogname}!")
+  else:
+    await ctx.send('You cannot do this command')
+
+@bot.command()
+
+async def unload(ctx, cogname):
+  if ctx.author.id == 219987389135716364 or 597420184122294272 or 361143836598337546:
+    bot.unload_extension(f"cogs.{cogname}")
+    await ctx.send(f"Unloaded {cogname}!")
+  else:
+    await ctx.send('You cannot do this command')
+
+@bot.command()
+
+async def reload(ctx, cogname):
+  if ctx.author.id == 219987389135716364 or 597420184122294272 or 361143836598337546:
+    bot.reload_extension(f"cogs.{cogname}")
+    await ctx.send(f"Reloaded {cogname}!")
+  else:
+    await ctx.send('You cannot do this command')
 # variable easy access
 
 
@@ -82,13 +107,13 @@ async def how_many_guilds(ctx):
 #      player.stop()
 #      await vc.disconnect()
 #  else:
-#      await client.say('User is not in a channel.')
+#      await bot.say('User is not in a channel.')
 
 
 #Invites
 @bot.command(name="bot_invite")
 async def bot_invite(ctx):
-  invite_embed = discord.Embed(title='Invite Link!', description="A link to invite Senko to your server!", url="https://discord.com/oauth2/authorize?client_id=691010171828437025&permissions=8&scope=bot" )
+  invite_embed = discord.Embed(title='Invite Link!', description="A link to invite Senko to your server!", url="https://discord.com/oauth2/authorize?bot_id=691010171828437025&permissions=8&scope=bot" )
   await ctx.channel.send(embed=invite_embed)
   
 
