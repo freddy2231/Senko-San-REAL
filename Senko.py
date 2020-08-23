@@ -183,8 +183,7 @@ async def playMusic(context, music):
 
         #await asyncio.sleep(15)
 
-        source = discord.FFmpegPCMAudio(music)
-        player = vc.play(source)
+        vc.play(discord.FFmpegPCMAudio(music))
 
         while vc.is_playing():
             if bot.playing_music_stop == True:
