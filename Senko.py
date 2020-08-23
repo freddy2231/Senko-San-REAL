@@ -333,7 +333,7 @@ async def love(ctx, *, personM:discord.Member):
   if not serious:
     #print("break 3")
     loveGIF = discord.File("senkoLove.gif")
-    for register in bot.the_hated:
+    for unused_variable_for_no_reason_lmao in bot.the_hated:
       if personM in bot.the_hated:
         #print("break 4")
         loveGIF = discord.File("sMAD.gif")
@@ -403,26 +403,6 @@ async def protecc(ctx):
       await ctx.channel.send("No bullying allowed!", file=protecc)
       record_stats("s$protecc", ctx)
 
-#@bot.command(name="sing")
-#async def sing(ctx):
-#  user = ctx.message.author
-#  voice_channel = user.voice.voice_channel
-#  channel = None
-  # only play music if user is in a voice channel
-#  if voice_channel != None:
-#      channel = voice_channel.name
-#      await bot.say('User is in channel: '+ channel)
-#      vc = await bot.join_voice_channel(voice_channel)
-#      player = vc.create_ffmpeg_player('vuvuzela.mp3', after=lambda: print('done'))
-#      player.start()
-#      while not player.is_done():
-#          await asyncio.sleep(1)
-#      player.stop()
-#      await vc.disconnect()
-#  else:
-#      await client.say('User is not in a channel.')
-
-
 #Invites
 @bot.command(name="bot_invite")
 async def bot_invite(ctx):
@@ -438,37 +418,78 @@ async def discord_invite(ctx):
     
 #HELP
 @bot.command(name='help')
-async def help(ctx):
-  record_stats("s$help", ctx)
-  commands = {}
-  gold = discord.Colour.gold()
-  #print("break 1")
-  helper = discord.Embed(title='Senko-san', description='wh-what would you like to do with me uwu\n\nDeveloper: @freddy2231#6891\nDM me on discord for questions, or a link to join the discord!', colour=gold)
-  #Command help
-  commands['s$hello'] = "Returns a greeting and mention"
-  commands['s$love @user'] = "Send some love to another user, or, if they're hated, send some hate ( •̀ᴗ•́ )و ̑̑. If you want some love yourself, try s$love @Senko-San"
-  commands['s$hate @user'] = "Add a user to the hate list"
-  commands['s$hate_remove @user'] = "Remove a user from the hate list"
-  commands['s$pat'] = "Pat Senko!"
-  commands['s$hug'] = "Hug Senko!"
-  commands['s$fluff'] = "Fluff Senko!"
-  commands['s$dance'] = "Let Senko dance!"
-  commands['s$bot_invite'] = "Link for you to add Senko to your server!"
-  commands['s$discord_invite'] = "Link for you to join the Discord!"
+async def help(ctx, *arg):
+  string_to_send = ""
+  if len(arg) == 0:
+    string_to_send = "Categories: "
+    string_to_send = string_to_send + "\n's$help passive' for passive commands"
+    string_to_send = string_to_send + "\n's$help dev' for all developer contribute to this bot"
+    string_to_send = string_to_send + "\n's$help old' for who still want access old s$help"
+    string_to_send = string_to_send + "\n's$help other' for other commands"
+    string_to_send = string_to_send + "\n's$help sing' for sing command"
+    string_to_send = string_to_send + "\n's$help hate' for hating users"
+  elif arg[0].lower() == "passive":
+    string_to_send = string_to_send + "'Bruh Detector' Detects bruh moments. (\"s$help_bruh\" for more info! )"
+    string_to_send = string_to_send + "\n'DadBot' Will respond to certain messages. (\"s$help_dadbot\" for more info!)"
+    string_to_send = string_to_send + "\n'Censor' Censors bad words. (\"s$help_censor\" for more info!)"
+    string_to_send = string_to_send + "\n'Senko' Your personal Senko! (\"s$help_senko\" for more info!)"
+    string_to_send = string_to_send + "\n'Serious' Serious mode limits commands Senko will respond to. (\"s$help_serious\" for more info!)"
+  elif arg[0] == "dev":
+    string_to_send = string_to_send + "The developers who contribute to this bot: "
+    string_to_send = string_to_send + "\n1. freddy2231#6891"
+    string_to_send = string_to_send + "\n2. Minecraft_Wolf#5636"
+    string_to_send = string_to_send + "\n3. sponk#1228\n"
+    string_to_send = string_to_send + "\nThis project initiated by freddy2231#6891"
+  elif arg[0] == "other":
+    string_to_send = string_to_send + "'s$discord_invite' Link for you to join the Discord!"
+    string_to_send = string_to_send + "\n's$pat' Pat Senko!"
+    string_to_send = string_to_send + "\n's$love @user' Send some love to another user, or, if they're hated, send some hate ( •̀ᴗ•́ )و ̑̑. If you want some love yourself, try s$love @Senko-San"
+    string_to_send = string_to_send + "\n's$fluff' Fluff Senko!"
+    string_to_send = string_to_send + "\n's$hug' Hug Senko!"
+    string_to_send = string_to_send + "\n's$dance' Let Senko dance!"
+    string_to_send = string_to_send + "\n's$bot_invite' Link for you to add Senko to your server!"
+  elif arg[0] == "hate":
+    string_to_send = string_to_send + "'s$hate @user' Add a user to the hate list"
+    string_to_send = string_to_send + "\n's$hate_remove @user' Remove a user from the hare list"
+  elif arg[0] == "sing":
+    await ctx.channel.send("Usage:")
+    await ctx.channel.send(prefix + "sing [intro | end | stop | status]")
+  elif arg[0].lower() == "old":
+    commands = {}
+    gold = discord.Colour.gold()
+    #print("break 1")
+    helper = discord.Embed(title='Senko-san', description='wh-what would you like to do with me uwu\n\nDeveloper: freddy2231#6891\nDM me on discord for questions, or a link to join the discord!', colour=gold)
+    #Command help
+    commands['s$hello'] = "Returns a greeting and mention"
+    commands['s$love @user'] = "Send some love to another user, or, if they're hated, send some hate ( •̀ᴗ•́ )و ̑̑. If you want some love yourself, try s$love @Senko-San"
+    commands["s$sing"] = "Do s$sing for more help"
+    commands['s$hate @user'] = "Add a user to the hate list"
+    commands['s$hate_remove @user'] = "Remove a user from the hate list"
+    commands['s$pat'] = "Pat Senko!"
+    commands['s$hug'] = "Hug Senko!"
+    commands['s$fluff'] = "Fluff Senko!"
+    commands['s$dance'] = "Let Senko dance!"
+    commands['s$bot_invite'] = "Link for you to add Senko to your server!"
+    commands['s$discord_invite'] = "Link for you to join the Discord!"
 
-  commands['Passive Activity:'] = "___________"
+    commands['Passive Activity:'] = "___________"
 
-  commands['"Bruh Detector"'] = "Detects bruh moments. (\"s$help_bruh\" for more info! )"
-  commands['"DadBot"'] = "Will respond to certain messages. (\"s$help_dadbot\" for more info!) "
-  commands['"Censor"'] = "Censors bad words. (\"s$help_censor\" for more info!)"
-  commands['"Senko"'] = "Your personal Senko! (\"s$help_senko\" for more info!)"
-  commands['"Serious"'] = "Serious mode limits commands Senko will respond to. (\"s$help_serious\" for more info!)"
-  #print("break 2")
-  for command, description in commands.items():
-    helper.add_field(name=command,value=(description + "\n"), inline=False)
-    #print("break 3")
-  #print("break 4")
-  await ctx.channel.send(embed = helper)
+    commands['"Bruh Detector"'] = "Detects bruh moments. (\"s$help_bruh\" for more info! )"
+    commands['"DadBot"'] = "Will respond to certain messages. (\"s$help_dadbot\" for more info!) "
+    commands['"Censor"'] = "Censors bad words. (\"s$help_censor\" for more info!)"
+    commands['"Senko"'] = "Your personal Senko! (\"s$help_senko\" for more info!)"
+    commands['"Serious"'] = "Serious mode limits commands Senko will respond to. (\"s$help_serious\" for more info!)"
+    #print("break 2")
+    for command, description in commands.items():
+      helper.add_field(name=command,value=(description + "\n"), inline=False)
+      #print("break 3")
+    #print("break 4")
+    await ctx.channel.send(embed = helper)
+    return
+  else:
+    await ctx.channel.send("No such command use s$help for more help for s$help command")
+    return
+  await ctx.channel.send(string_to_send)
 
 @bot.command(name='help_dadbot')
 async def help_dadbot(ctx):
