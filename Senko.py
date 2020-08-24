@@ -331,4 +331,7 @@ async def on_ready():
     
 
 #keep_alive()  also not run in repl again
-bot.run('Njk5OTA1MzE1Nzk3NDY3MjQ2.XpbLng.veeqDhhSeFVMNxqdcuIUKfsPR1A')
+if not os.environ.get("TOKEN") == None:
+    bot.run(os.environ.get("TOKEN"))
+else:
+    print("Error: TOKEN enviroment variable not set")
