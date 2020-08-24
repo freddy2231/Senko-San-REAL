@@ -2,13 +2,13 @@ import discord
 from discord.ext import commands
 import traceback
 
-class COGNAME(commands.Cog):
-    def __init__(self, client):
-        self.client = client
+class errors(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Loaded COGNAME cog!")
+        print("Loaded errors cog!")
 
     async def on_command_error(self, ctx, error):
         embed = discord.Embed(title='Error', color='#FF0000')
@@ -26,5 +26,5 @@ class COGNAME(commands.Cog):
             except Exception as error:
                 return await ctx.send(traceback.format_exc())
     
-def setup(client):
-    client.add_cog(COGNAME(client))
+def setup(bot):
+    bot.add_cog(errors(bot))
