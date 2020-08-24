@@ -19,9 +19,9 @@ def hate_false(id):
         hi[id] = False
     json.dump(hi, open('hated.json', 'r'),sort_keys=True,indent=4)
 
-serious = open('guild_serious', 'r')
+serious = json.load(open('guild_serious', 'r'))
 
-hate = open('hated.json', 'r')
+hate = json.load(open('hated.json', 'r'))
 
 msg = 'This server is serious'
 

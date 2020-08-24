@@ -4,7 +4,7 @@ import json
 from time import gmtime, strftime
 import random
 
-dad = open('dad_guilds.json', 'r')
+dad = json.load(open('dad_guilds.json', 'r'))
 
 def true_dad(guild):
     lol = json.load(open('dad_guilds.json', 'r'))

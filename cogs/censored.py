@@ -17,7 +17,7 @@ def write_f(id):
 
     json.dump(p, open('censored_guild.json', 'r'),sort_keys=True,indent=4)
 
-censor = open('censored_guild.json', 'r')
+censor = json.load(open('censored_guild.json', 'r'))
 
 
 

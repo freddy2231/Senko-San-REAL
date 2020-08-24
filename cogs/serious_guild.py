@@ -26,7 +26,7 @@ def false_serious(guild):
 
     json.dump(breh, open('guild_serious.json', 'r'),sort_keys=True,indent=4)
 
-serious = open('guild_serious.json', 'r')
+serious = json.load(open('guild_serious.json', 'r'))
 
 class serious_guilds(commands.Cog):
     def __init__(self, bot):

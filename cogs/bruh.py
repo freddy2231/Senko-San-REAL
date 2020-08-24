@@ -4,7 +4,7 @@ from time import strftime, gmtime
 import json 
 
 
-bruh = open('bruh.json', 'r')
+bruh = json.load(open('bruh.json', 'r'))
 
 def bruh_t(id):
     p = json.load(open('bruh.json', 'r'))
