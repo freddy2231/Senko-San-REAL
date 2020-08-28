@@ -2,7 +2,7 @@
 import os
 print("Checking if PyNaCl is installed...")
 os.system("PYLIB=$(pip list | grep PyNaCl)")
-if not os.environ.get("PYLIB").lower().startswith("pynacl"):
+if os.environ.get("PYLIB") == None:
     print("PyNaCl not installed starting installation...")
     os.system("pip install pynacl")
     print("Done installing PyNaCl")
@@ -11,7 +11,7 @@ else:
     
 print("Checking if FFMPEG is installed...")
 os.system("PYLIB=$(pip list | grep PyNaCl)")
-if not os.environ.get("PYLIB").lower().startswith("ffmpeg"):
+if os.environ.get("PYLIB") == None:
     print("FFMPEG not installed starting installation...")
     os.system("pip install FFMPEG")
     print("Done installing FFMPEG")
