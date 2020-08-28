@@ -1,8 +1,29 @@
 # Work with Python 3.6
+import os
+print("Checking if PyNaCl is installed...")
+os.system("PYLIB=$(pip list | grep PyNaCl)")
+if not os.environ.get("PYLIB").lower().startswith("pynacl"):
+    print("PyNaCl not installed starting installation...")
+    os.system("pip install pynacl")
+    print("Done installing PyNaCl")
+else:
+    print("PyNaCl installed")
+    
+print("Checking if FFMPEG is installed...")
+os.system("PYLIB=$(pip list | grep PyNaCl)")
+if not os.environ.get("PYLIB").lower().startswith("ffmpeg"):
+    print("FFMPEG not installed starting installation...")
+    os.system("pip install FFMPEG")
+    print("Done installing FFMPEG")
+else:
+    print("FFMPEG installed")
+
+print("Done checking and installed required lib. Continure loading main code")
+#######
+os.system("clear")
 import discord
 from discord.ext import commands
 #from webserver import keep_alive  Because this will not run in repl again
-import os
 import asyncio
 import random
 from time import gmtime, strftime
