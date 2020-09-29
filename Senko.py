@@ -1,17 +1,19 @@
 # Work with Python 3.6
 import discord
 from discord.ext import commands
-from webserver import keep_alive 
+#from webserver import keep_alive 
 import os
 import asyncio 
 import random
+import sys, traceback
 import time
+from util.logger import Logger
 
-os.environ['TZ'] = 'US/Eastern'
+os.environ['TZ'] = 'Asia/Indonesia' # My timezone
 time.tzset()
 
-print("Please wait for me")
-
+Logger = Logger()
+Logger.info(__file__, "Senko San started")
 
 prefix = "s$"
 bot = commands.Bot(command_prefix = prefix)
@@ -79,6 +81,7 @@ class Queue:
     for g in self.gamers:
       if g == str(gamer):
         self.gamers.remove(f"{gamer}")
+
 def join_queue(game, gamer):
   if game in bot.open_games:
     game.add_gamer(gamer)
@@ -99,39 +102,51 @@ def remove_queue(game):
 
 @bot.command(name="queue")
 async def queue(ctx,*arg):
-  real_channel = ctx.message.channel
-  gold = discord.Color.gold()
-  if len(arg) == 0:
-    await ctx.send("Please use the command as follows:\n\ns$queue <create, join, remove, or leave> <game>")
-  if "create" in arg[0]:
-    for item in bot.games:
-      if item in arg[1]:
-        create_queue(arg[1], ctx.author)
-        queue_embed = discord.Embed(title=f"{item} LFG", description=f"{ctx.message.author}", color=gold)
-  elif "join" in arg[0]:
-    for item in bot.open_games:
-      if item.game == arg[1]:
-        for g in item.gamers:
-          if g == str(ctx.message.author):
-            await ctx.send("You are already in that queue!")
-            return
-        item.add_gamer(ctx.message.author)
-        des = "\n".join(item.gamers)
-        queue_embed = discord.Embed(title=f"{item.game} LFG", description=f"{des}", color=gold)
-  elif "remove" in arg[0]:
-    for item in bot.open_games:
-      if item.game == arg[1]:
-        remove_queue(item.game)
-        queue_embed = discord.Embed(title=f"{item.game} LFG - REMOVED", color=gold)
-  elif "leave" in arg[0]:
-    for item in bot.open_games:
-      if item.game == arg[1]:
-        leave_queue(item.game, ctx.message.author)
-        des = "\n".join(item.gamers)
-        queue_embed = discord.Embed(title=f"{item.game} LFG", description=f"{des}", color=gold)
-  await ctx.channel.purge(bulk=True)
-  await ctx.send(embed=queue_embed)
-
+  try:
+    real_channel = ctx.message.channel
+    gold = discord.Color.gold()
+    if len(arg) == 0:
+      await ctx.send("Please use the command as follows:\n\ns$queue <create, join, remove, or leave> <game>")
+    if "create" in arg[0]:
+      for item in bot.games:
+        if item in arg[1]:
+          create_queue(arg[1], ctx.author)
+          queue_embed = discord.Embed(title=f"{item} LFG", description=f"{ctx.message.author}", color=gold)
+    elif "join" in arg[0]:
+      for item in bot.open_games:
+        if item.game == arg[1]:
+          for g in item.gamers:
+            if g == str(ctx.message.author):
+              await ctx.send("You are already in that queue!")
+              return
+          item.add_gamer(ctx.message.author)
+          des = "\n".join(item.gamers)
+          queue_embed = discord.Embed(title=f"{item.game} LFG", description=f"{des}", color=gold)
+    elif "remove" in arg[0]:
+      for item in bot.open_games:
+        if item.game == arg[1]:
+          remove_queue(item.game)
+          queue_embed = discord.Embed(title=f"{item.game} LFG - REMOVED", color=gold)
+    elif "leave" in arg[0]:
+      for item in bot.open_games:
+        if item.game == arg[1]:
+          leave_queue(item.game, ctx.message.author)
+          des = "\n".join(item.gamers)
+          queue_embed = discord.Embed(title=f"{item.game} LFG", description=f"{des}", color=gold)
+    await ctx.channel.purge(bulk=True)
+    await ctx.send(embed=queue_embed)
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return        
 
 
 #SERIOUS GUILD COMMANDS
@@ -139,9 +154,24 @@ async def queue(ctx,*arg):
 
 @bot.command(name='getSeriousGuilds')
 async def getSeriousGuilds(ctx):
-  with open("serious.txt", "r") as b:
-    bruh = b.read()
-    await ctx.send(bruh)
+  try:
+    h = open("serious.txt", "r")
+    with h as b:
+      bruh = b.read()
+      await ctx.send(bruh)
+    h.close()
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return        
 
 #DAD COMMANDS
 
@@ -149,18 +179,47 @@ bot.dad_guilds = []
 
 @bot.command(name='getDadGuilds')
 async def getDadGuilds(ctx):
-  with open("dadbot.txt", "r") as b:
-    bruh = b.read()
-    await ctx.send(bruh)
+  try:
+    h = open("dadbot.txt", "r")
+    with h as b:
+      bruh = b.read()
+      await ctx.send(bruh)
+    h.close()
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
 
 @bot.command(name='dad_joke')
 async def dad_joke(ctx):
-  with open("dadbot.txt", "r") as d:
-    dad = d.read()
-    if str(ctx.guild.id) in dad:
-      dad_responses = ["Why was the stadium so cool? Because it was filled with fans!", "Why can't you hear a pterodactyl using the bathroom? Because the 'P' was silent!", "My dad was chopping onions. Onions was a good dog.", "What do you call a fish with no eyes? A fsh!", "What happened to the Italian chef? He pasta way!", "They ask me, why don't I tell egg jokes? Because they always get cracked up!", "Why was the mathbook always depressed? Because his parents were divorced and his grades were falling due to the stress and neither of his parents cared about him so he spiraled into a never-ending self-pity party, in which he could never return from. Just kidding! Because it's filled with problems!", "Someone asked to call their parents on my phone, but now it's broken. They really didn't need to stand on it to make the call!", "Did you hear about the guy who invented the knock-knock joke? He won the 'no-bell' prize!", "A family of elephants walk into a bar. What do they take? A lot of space!", "If a child refuses to sleep during nap time, are they guilty of resisting a rest?", "What sound does a plane make when it crashes? Boeing!", "I got into a fight with a guy who hit me with a bat. I didn't know these animals hurt that much!", "É pave ou pa cume?"]
-      num = random.randint(0,len(dad_responses)-1)
-      await ctx.channel.send(dad_responses[num])
+  try:
+    h = open("dadbot.txt", "r")
+    with h as d:
+      dad = d.read()
+      if str(ctx.guild.id) in dad:
+        dad_responses = ["Why was the stadium so cool? Because it was filled with fans!", "Why can't you hear a pterodactyl using the bathroom? Because the 'P' was silent!", "My dad was chopping onions. Onions was a good dog.", "What do you call a fish with no eyes? A fsh!", "What happened to the Italian chef? He pasta way!", "They ask me, why don't I tell egg jokes? Because they always get cracked up!", "Why was the mathbook always depressed? Because his parents were divorced and his grades were falling due to the stress and neither of his parents cared about him so he spiraled into a never-ending self-pity party, in which he could never return from. Just kidding! Because it's filled with problems!", "Someone asked to call their parents on my phone, but now it's broken. They really didn't need to stand on it to make the call!", "Did you hear about the guy who invented the knock-knock joke? He won the 'no-bell' prize!", "A family of elephants walk into a bar. What do they take? A lot of space!", "If a child refuses to sleep during nap time, are they guilty of resisting a rest?", "What sound does a plane make when it crashes? Boeing!", "I got into a fight with a guy who hit me with a bat. I didn't know these animals hurt that much!", "É pave ou pa cume?"]
+        num = random.randint(0,len(dad_responses)-1)
+        await ctx.channel.send(dad_responses[num])
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return        
 
 
 #CENSORED GUILD COMMANDS
@@ -168,70 +227,121 @@ async def dad_joke(ctx):
 
 @bot.command(name='getCensoredGuilds')
 async def getCensoredGuilds(ctx):
-  with open("censor.txt", "r") as b:
-    bruh = b.read()
-    await ctx.send(bruh)
+  try:
+    h = open("censor.txt", "r")
+    with h as b:
+      bruh = b.read()
+      await ctx.send(bruh)
+    h.close()
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return  
 
 #TOGGLE COMMANDS
 
 @bot.command(name="toggle")
 async def toggle(ctx, *arg):
-  if len(arg) == 0:
-    await ctx.channel.send("Please type a passive activity to toggle.")
-  elif arg[0] == "bruh":
-    with open("not_bruh.txt", "r+") as b:
-      bruh = b.read()
-      if not(str(ctx.guild.id) in bruh):
-        b.write(str(ctx.guild.id) + "\n")
-        await ctx.send("I will not detect bruh moments in this server.")
-      elif (str(ctx.guild.id) in bruh):
-        bruh = bruh.replace(str(ctx.guild.id), "")
-        b.truncate(0)
-        b.write(bruh)
-        await ctx.send("Tehehe")
-  elif arg[0] == "censor":
-    with open("censor.txt", "r+") as c:
-      censor = c.read()
-      if not(str(ctx.guild.id) in censor):
-        c.write(str(ctx.guild.id) + "\n")
-        await ctx.send("I will censor this server.")
-      elif str(ctx.guild.id) in censor:
-        censor = censor.replace(str(ctx.guild.id), "")
-        c.truncate(0)
-        c.write(censor)
-        await ctx.send("Tehehe")
-  elif arg[0] == "serious":
-    with open("serious.txt", "r+") as s:
-      serious = s.read()
-      if not(str(ctx.guild.id) in serious):
-        s.write(str(ctx.guild.id) + "\n")
-        await ctx.send("I will behave in this server.")
-      elif str(ctx.guild.id) in serious:
-        serious = serious.replace(str(ctx.guild.id), "")
-        s.truncate(0)
-        s.write(serious)
-        await ctx.send("Tehehe")
-  elif arg[0] == "dadbot":
-    with open("dadbot.txt", "r+") as d:
-      dadbot = d.read()
-      if not(str(ctx.guild.id) in dadbot):
-        d.write(str(ctx.guild.id) + "\n")
-        await ctx.send("DadBot activated.")
-      elif str(ctx.guild.id) in dadbot:
-        dadbot = dadbot.replace(str(ctx.guild.id), "")
-        d.truncate(0)
-        d.write(dadbot)
-        await ctx.send("Your dad left you.")
-  else:
-    await ctx.channel.send("That is not a function! Try \"s$toggle bruh\", \"s$toggle censor\", \"s$toggle dadbot\", or \"s$toggle serious\" to toggle a function!")
+  try:
+    if len(arg) == 0:
+      await ctx.channel.send("Please type a passive activity to toggle.")
+    elif arg[0] == "bruh":
+      h = open("not_bruh.txt", "r+")
+      with h as b:
+        bruh = b.read()
+        if not(str(ctx.guild.id) in bruh):
+          b.write(str(ctx.guild.id) + "\n")
+          await ctx.send("I will not detect bruh moments in this server.")
+        elif (str(ctx.guild.id) in bruh):
+          bruh = bruh.replace(str(ctx.guild.id), "")
+          b.truncate(0)
+          b.write(bruh)
+          await ctx.send("Tehehe")
+      h.close()
+    elif arg[0] == "censor":
+      h = open("censor.txt", "r+")
+      with h as c:
+        censor = c.read()
+        if not(str(ctx.guild.id) in censor):
+          c.write(str(ctx.guild.id) + "\n")
+          await ctx.send("I will censor this server.")
+        elif str(ctx.guild.id) in censor:
+          censor = censor.replace(str(ctx.guild.id), "")
+          c.truncate(0)
+          c.write(censor)
+          await ctx.send("Tehehe")
+      h.close()
+    elif arg[0] == "serious":
+      h = open("serious.txt", "r+")
+      with h as s:
+        serious = s.read()
+        if not(str(ctx.guild.id) in serious):
+          s.write(str(ctx.guild.id) + "\n")
+          await ctx.send("I will behave in this server.")
+        elif str(ctx.guild.id) in serious:
+          serious = serious.replace(str(ctx.guild.id), "")
+          s.truncate(0)
+          s.write(serious)
+          await ctx.send("Tehehe")
+      h.close()
+    elif arg[0] == "dadbot":
+      h = open("dadbot.txt", "r+")
+      with h as d:
+        dadbot = d.read()
+        if not(str(ctx.guild.id) in dadbot):
+          d.write(str(ctx.guild.id) + "\n")
+          await ctx.send("DadBot activated.")
+        elif str(ctx.guild.id) in dadbot:
+          dadbot = dadbot.replace(str(ctx.guild.id), "")
+          d.truncate(0)
+          d.write(dadbot)
+          await ctx.send("Your dad left you.")
+      h.close()
+    else:
+      await ctx.channel.send("That is not a function! Try \"s$toggle bruh\", \"s$toggle censor\", \"s$toggle dadbot\", or \"s$toggle serious\" to toggle a function!")
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return  
     
 #BRUH DETECTOR COMMANDS 
 
 @bot.command(name='getBruhGuilds')
 async def getBruhGuilds(ctx):
-  with open("not_bruh.txt", "r") as b:
-    bruh = b.read()
-    await ctx.send(bruh)
+  try:
+    h = open("not_bruh.txt", "r+")
+    with h as b:
+      bruh = b.read()
+      await ctx.send(bruh)
+    h.close()
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return  
 
 
 #COMMANDS
@@ -244,7 +354,7 @@ async def entry(ctx, *, entry):
 
 
 async def playMusic(context, music):
-
+  try:
     # grab the user who sent the command
     user=context.message.author
 
@@ -293,9 +403,21 @@ async def playMusic(context, music):
             await context.channel.send(user.mention + ' can you enter the \'' + bot.playing_music_chn + '\' channel please because i currently singing there')
     else:
         await context.channel.send(user.mention + ' can you enter the voice channel please if you want me singing for you')
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    bot.playing_music = False
+    bot.playing_music_name = None
+    bot.playing_music_name = ''
+    bot.playing_music_stop = False
+    raise
 
 @bot.command(name='sing')
 async def sing(ctx, *arg):  # Singing  intro command
+  try:
     if len(arg) == 0:
         await ctx.channel.send("Usage:")
         await ctx.channel.send(prefix + "sing [intro | end | stop | status]")
@@ -323,6 +445,12 @@ async def sing(ctx, *arg):  # Singing  intro command
         await ctx.channel.send("No such subcommands")
         await ctx.channel.send("Usage:")
         await ctx.channel.send(prefix + "sing [intro | end | stop | status]")
+  except:
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
 
 @bot.command(name='hello')
 async def hello(ctx):
@@ -331,12 +459,25 @@ async def hello(ctx):
 @bot.command(name='spank')
 async def spank(ctx):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
-  if not serious:
-    await ctx.channel.send("Uhnnn, why would you spank me, Master? Did I do anything wrong?")
+  try:
+    with open("serious.txt", "r+") as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+    if not serious:
+      await ctx.channel.send("Uhnnn, why would you spank me, Master? Did I do anything wrong?")
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
 
 @bot.command(name="guilds")
 async def guilds(ctx):
@@ -345,97 +486,174 @@ async def guilds(ctx):
 @bot.command(name='dance')
 async def dance(ctx):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
-  if not serious:
-    danceGIF = discord.File("pics_n_gifs/sDance.gif")
-    await ctx.channel.send(file=danceGIF)
+  try:
+    h = open("serious.txt", "r+")
+    with open("serious.txt", "r") as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+    if not serious:
+      danceGIF = discord.File("pics_n_gifs/sDance.gif")
+      await ctx.channel.send(file=danceGIF)
+    h.close()
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
 
 @bot.command(name='pat')
 async def pat(ctx):
-  patGIF = discord.File("pics_n_gifs/sPAT.gif")
+  try:
+    patGIF = discord.File("pics_n_gifs/sPAT.gif")
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
   await ctx.channel.send(file=patGIF)
 
 bot.the_hated = []
 @bot.command(name='hate')
 async def hate(ctx, person:discord.Member):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
-  if not serious:
-    if not(person in bot.the_hated):
-      bot.the_hated.append(person)
-      await ctx.send("Added!")
-      return
-    else: 
-      await ctx.channel.send("That person is already on the list!")
-  else:
-      pass
+  try:
+    h = open("serious.txt", "r+")
+    with h as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+    h.close()
+    if not serious:
+      if not(person in bot.the_hated):
+        bot.the_hated.append(person)
+        await ctx.send("Added!")
+        return
+      else: 
+        await ctx.channel.send("That person is already on the list!")
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
     
 
 @bot.command(name='hate_remove')
 async def hate_remove(ctx, person:discord.Member):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
-  if not serious:
-    if (person in bot.the_hated):
-      bot.the_hated.remove(person)
-      await ctx.send("Removed!")
-      return
-    else: 
-      await ctx.channel.send("That person isn't hated (yet...)")
-  else:
-      pass
+  try:
+    h = open("serious.txt", "r+")
+    with open("serious.txt", "r+") as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+    if not serious:
+      if (person in bot.the_hated):
+        bot.the_hated.remove(person)
+        await ctx.send("Removed!")
+        return
+      else: 
+        await ctx.channel.send("That person isn't hated (yet...)")
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
 
 @bot.command(name='hate_list')
 async def hate_list(ctx):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
-  if not serious:
-    await ctx.send(bot.the_hated)
-  else:
-    pass
+  try:
+    h = open("serious.txt", "r+")
+    with h as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+    if not serious:
+      await ctx.send(bot.the_hated)
+    h.close()
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
 
 bot.number = 691010171828437025
 @bot.command(name='love')
 async def love(ctx, *, personM:discord.Member):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
-  if not serious:
-    loveGIF = discord.File("pics_n_gifs/senkoLove.gif")
-    for unused_variable_for_no_reason_lmao in bot.the_hated:
-      if personM in bot.the_hated:
-        loveGIF = discord.File("pics_n_gifs/sMAD.gif")
-        await ctx.channel.send(f"Shut up, {personM.mention} does not deserve love", file=loveGIF)
+  try:
+    with open("serious.txt", "r") as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+    if not serious:
+      loveGIF = discord.File("pics_n_gifs/senkoLove.gif")
+      for unused_variable_for_no_reason_lmao in bot.the_hated:
+        if personM in bot.the_hated:
+          loveGIF = discord.File("pics_n_gifs/sMAD.gif")
+          await ctx.channel.send(f"Shut up, {personM.mention} does not deserve love", file=loveGIF)
+          return
+
+      if personM.id == bot.number:
+        loveGIF = discord.File("pics_n_gifs/sLove.gif")
+        await ctx.channel.send(f"I love you too, {ctx.author.mention}", file=loveGIF)
         return
 
-    if personM.id == bot.number:
-      loveGIF = discord.File("pics_n_gifs/sLove.gif")
-      await ctx.channel.send(f"I love you too, {ctx.author.mention}", file=loveGIF)
-      return
+      elif personM.id == ctx.author.id:
+        loveGIF == discord.File("pics_n_gifs/senkoLove.gif")
+        await ctx.channel.send(f"You must love yourself a lot, {personM.mention}", file=loveGIF)
 
-    elif personM.id == ctx.author.id:
-      loveGIF == discord.File("pics_n_gifs/senkoLove.gif")
-      await ctx.channel.send(f"You must love yourself a lot, {personM.mention}", file=loveGIF)
-
+      else:
+        loveGIF = discord.File("pics_n_gifs/senkoLove.gif")
+        await ctx.channel.send(f"{ctx.author.mention} loves you, {personM.mention}", file=loveGIF)
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
     else:
-      loveGIF = discord.File("pics_n_gifs/senkoLove.gif")
-      await ctx.channel.send(f"{ctx.author.mention} loves you, {personM.mention}", file=loveGIF)
-  else:
-    pass
+      await ctx.send("An error occured.")
+    return
 
 @bot.command(name="fluff")
 async def fluff(ctx):
@@ -445,35 +663,90 @@ async def fluff(ctx):
     if str(ctx.guild.id) in seriousR:
       serious = True
   if not serious:
+    try: # To make filesystem error to logging the error
+      fluffy = discord.File("pics_n_gifs/sFluff1.png")
+      fluffy = discord.File("pics_n_gifs/sFluff3.jpg")
+      fluffy = discord.File("pics_n_gifs/sFluff4.jpg")
+    except:
+      etype, evalue, tb = sys.exc_info()
+      Logger.err(__file__, "Thrown exception")
+      Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+      Logger.err(__file__, "Stacktrace:")
+      Logger.err(__file__, traceback.format_exc())
+      errID = Logger.getLastLine()
+      if not errID == None:
+        await ctx.send("Report this error ID #" + str(errID) + " to developers")
+      else:
+        await ctx.send("An error occured.")
+      return
+
     gifnum = random.randint(0,2)
     if gifnum == 0:
-      fluffy = discord.File("pics_n_gifs/sFluff1.png")
       await ctx.channel.send(file=fluffy)
     if gifnum == 1:
-      fluffy = discord.File("pics_n_gifs/sFluff3.jpg")
       await ctx.channel.send(file=fluffy)
     if gifnum == 2:
-      fluffy = discord.File("pics_n_gifs/sFluff4.jpg")
       await ctx.channel.send(file=fluffy)
 
 @bot.command(name="hug")
 async def hug(ctx):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
+  try:
+    c = open("serious.txt", "r+")
+    with c as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
   if not serious:
-      hugGIF = discord.File("pics_n_gifs/sHug.gif")
+      try:
+        hugGIF = discord.File("pics_n_gifs/sHug.gif")
+      except:
+        etype, evalue, tb = sys.exc_info()
+        Logger.err(__file__, "Thrown exception")
+        Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+        Logger.err(__file__, "Stacktrace:")
+        Logger.err(__file__, traceback.format_exc())
+        errID = Logger.getLastLine()
+        if not errID == None:
+          await ctx.send("Report this error ID #" + str(errID) + " to developers")
+        else:
+          await ctx.send("An error occured.")
+        return
       await ctx.channel.send(file=hugGIF)
 
 @bot.command(name="protecc")
 async def protecc(ctx):
   serious = False
-  with open("serious.txt", "r") as s:
-    seriousR = s.read()
-    if str(ctx.guild.id) in seriousR:
-      serious = True
+  try:
+    c = open("serious.txt", "r+")
+    with c as s:
+      seriousR = s.read()
+      if str(ctx.guild.id) in seriousR:
+        serious = True
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
   if not serious:
       protecc = discord.File("pics_n_gifs/sJOJO.png")
       await ctx.channel.send("No bullying allowed!", file=protecc)
@@ -497,33 +770,57 @@ async def dashboard(ctx):
   off = "\U0001F534"
 
   switch = {}
-  with open("not_bruh.txt", "r") as b:
-    bruh = b.read()
-    if not str(ctx.guild.id) in bruh:
-      switch[" Bruh Detector: "] = f"{on}"
-    else:
-      switch[" Bruh Detector: "] = f"{off}"
-  with open("serious.txt", "r") as b:
-    serious = b.read()
-    if str(ctx.guild.id) in serious:
-      switch[" Serious:              "] = f"{on}"
-    else:
-      switch[" Serious:              "] = f"{off}"
+  try:
+    c = open("not_bruh.txt", "r+")
+    with c as b:
+      bruh = b.read()
+      if not str(ctx.guild.id) in bruh:
+        switch[" Bruh Detector: "] = f"{on}"
+      else:
+        switch[" Bruh Detector: "] = f"{off}"
 
-  with open("censor.txt", "r") as b:
-    censor = b.read()
-    if str(ctx.guild.id) in censor:
-      switch[" Censor:               "] = f"{on}"
+    c.close()
+    c = open("serious.txt", "r+")
+
+    with open("serious.txt", "r") as b:
+      serious = b.read()
+      if str(ctx.guild.id) in serious:
+        switch[" Serious:              "] = f"{on}"
+      else:
+        switch[" Serious:              "] = f"{off}"
+
+    c.close()
+    c = open("censor.txt", "r+")
+
+    with c as b:
+      censor = b.read()
+      if str(ctx.guild.id) in censor:
+        switch[" Censor:               "] = f"{on}"
+      else:
+        switch[" Censor:               "] = f"{off}"
+    c.close()
+    c = open("dadbot.txt", "r+")
+
+    with c as b:
+      dad = b.read()
+      if str(ctx.guild.id) in dad:
+        switch[" DadBot:              "] = f"{on}"
+      else:
+        switch[" DadBot:              "] = f"{off}"
+    c.close()
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
     else:
-      switch[" Censor:               "] = f"{off}"
-  
-  with open("dadbot.txt", "r") as b:
-    dad = b.read()
-    if str(ctx.guild.id) in dad:
-      switch[" DadBot:              "] = f"{on}"
-    else:
-      switch[" DadBot:              "] = f"{off}"
-  
+      await ctx.send("An error occured.")
+    return
+
   for name, toggle in switch.items():
     dashboard.add_field(name=name + "   " + toggle, value="_______________", inline=False)
   
@@ -541,6 +838,22 @@ async def discord_invite(ctx):
   discordinvite_embed = discord.Embed(title='Invite Link!', url="https://discord.gg/dtNdafD", description='A link to the discord server dedicated to Senko, Senko\'s Playground!', color=discord.Color.gold())
   await ctx.channel.send(embed=discordinvite_embed)
     
+@bot.command(name="crash")
+async def crash(ctx):
+  try:
+    raise Exception("Freaking error")
+  except:
+    etype, evalue, tb = sys.exc_info()
+    Logger.err(__file__, "Thrown exception")
+    Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+    Logger.err(__file__, "Stacktrace:")
+    Logger.err(__file__, traceback.format_exc())
+    errID = Logger.getLastLine()
+    if not errID == None:
+      await ctx.send("Report this error ID #" + str(errID) + " to developers")
+    else:
+      await ctx.send("An error occured.")
+    return
 
 #HELP
 @bot.command(name='help')
@@ -617,6 +930,7 @@ async def help(ctx, *arg):
 
 @bot.event
 async def on_message(message):
+ try:
   if message.author == bot.user:
       return
       #so the bot doesn't respond to itself
@@ -632,22 +946,28 @@ async def on_message(message):
   bad_words[8] = "asshole" 
   bad_words[9] = "nigga"
 
-  with open("censor.txt", "r") as c:
+  handle = open("censor.txt", "r")
+  with handle as c:
     censorR = c.read()
     censor = False
     if str(message.guild.id) in censorR:
-        censor = True
+      censor = True
+  handle.close()
+
   if censor:
       for word in bad_words:
           if bad_words[word] in message.content.lower():
               await message.delete()
               await message.channel.send("That's really funny bud.")
 
-  with open("not_bruh.txt") as b:
+  handle = open("not_bruh.txt")
+  with handle as b:
     bruhR = b.read()    
     bruh = False
     if str(message.guild.id) in bruhR:
         bruh = True
+  handle.close()
+
   if not bruh:
       if  "bruh" in message.content.lower():
           if not ("s$toggle bruh" in message.content or "s$getBruhGuilds" in message.content or "s$help bruh" in message.content):
@@ -656,15 +976,15 @@ async def on_message(message):
               #bruh detector, sends msg and file
 
   serious = False
-  with open("serious.txt", "r") as s:
+  handle = open("serious.txt", "r")
+  with handle as s:
     seriousR = s.read()
     if str(message.guild.id) in seriousR:
       serious = True
+  handle.close()
   if not serious:
       if ("i love you" in message.content.lower()) and ("senko" in message.content.lower()):
           await message.channel.send(f"I love you too, {message.author.mention}")
-  else:
-      pass
 
   
   dad = False
@@ -757,19 +1077,49 @@ async def on_message(message):
     mad = discord.File("pics_n_gifs/sMAD.gif")
     await message.channel.send("That's not very nice...", file=mad)
   await bot.process_commands(message)
+ except:
+  etype, evalue, tb = sys.exc_info()
+  Logger.err(__file__, "Thrown exception")
+  Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+  Logger.err(__file__, "Stacktrace:")
+  Logger.err(__file__, traceback.format_exc())
+  errID = Logger.getLastLine()
+  if not errID == None:
+    await message.channel.send("Report this error ID #" + str(errID) + " to developers")
+  else:
+    await message.channel.send("An error occured.")
+ await bot.process_commands(message)
 
 @bot.event
 async def on_ready():
     status = discord.Game("s$help to get started!")
     await bot.change_presence(status=discord.Status.online, activity=status)
     channel = bot.get_channel(745429102063779902)
-    await channel.send("Senko-san, at your service!")
-    print('\nLogged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------')
-    print("Number of guilds: " + str(len(bot.guilds)))
+    if not channel == None:
+      await channel.send("Senko-san, at your service!")
+    else:
+      Logger.warn(__file__, "Channel with ID of 745429102063779902 is not found.")
+      Logger.warn(__file__, "Not announcing if the bot running")
+    Logger.info(__file__, 'Logged in as ' + bot.user.name)
+    Logger.info(__file__, 'With use ID of ' + str(bot.user.id))
+    Logger.info(__file__, "Number of guilds: " + str(len(bot.guilds)))
 
 
-keep_alive()
-bot.run(os.environ.get("TOKEN"))
+#keep_alive()
+if not os.environ.get("TOKEN") == None:
+    try:
+      bot.run(os.environ.get("TOKEN"))
+    except:
+      etype, evalue, tb = sys.exc_info()
+      Logger.err(__file__, "Unexpected exception")
+      Logger.err(__file__, '{}: {}'.format(etype.__name__, evalue))
+      Logger.err(__file__, "Stacktrace:")
+      Logger.err(__file__, traceback.format_exc())
+      Logger.err(__file__, "Hard crash occur")
+      Logger.err(__file__, "Please refer to error ID #" + Logger.getLastLine())
+      Logger.err(__file__, "Shutting down")
+else:
+    Logger.err(__file__, "Error: TOKEN enviroment variable not set")
+    Logger.debug(__file__, "Please refer to error ID #" + str(Logger.getLastLine()))
+    Logger.info(__file__, "Shutting down...")
+
